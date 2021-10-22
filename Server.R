@@ -4,11 +4,17 @@ library(scales)
 library(stringr)
 library(gridExtra)
 library(maps)
+
+library(knitr)
+library(lubridate)
+library(flexdashboard)
+
+
 options(scipen=999)
 
 shinyServer(function(input, output) {
   #testing
-  setwd("~/Projects/Police Shootings")
+  #setwd("~/Projects/Police Shootings")
   
   police_killings <- read.csv(url("https://github.com/washingtonpost/data-police-shootings/releases/download/v0.1/fatal-police-shootings-data.csv"))
   percentage_below_poverty <- read.csv("PercentagePeopleBelowPovertyLevel.csv")
@@ -113,7 +119,7 @@ shinyServer(function(input, output) {
   NorthEastNames <- tolower(state.name[match(NorthEast,state.abb)])
 
   
-  poverty_rates$State <- state.abb[match(poverty_rates$ï..State,state.name)]
+  poverty_rates$State <- state.abb[match(poverty_rates[,1],state.name)]
   
   
   

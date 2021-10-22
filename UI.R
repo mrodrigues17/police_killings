@@ -12,7 +12,7 @@ library(httr)
 library(jsonlite)
 library(plotly)
 
-setwd("~/Projects/Police Shootings")
+#setwd("~/Projects/Police Shootings")
 
 police_killings <- read.csv(url("https://github.com/washingtonpost/data-police-shootings/releases/download/v0.1/fatal-police-shootings-data.csv"))
 
@@ -26,7 +26,8 @@ shinyUI(dashboardPage(skin="black",
                       dashboardHeader(title = "Police Killings by State", titleWidth=300),
                       dashboardSidebar(
                         sidebarMenu(id="tabs",
-                                    menuItem("Police Killings", tabName = "police_killings", icon = icon("star-o")),
+                                    menuItem("Police Killings", tabName = "police_killings"#, icon = icon("star-o")
+                                             ),
                                     menuItem("About", tabName = "about", icon = icon("question-circle")),
                                     
                                     
