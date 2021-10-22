@@ -111,11 +111,7 @@ shinyServer(function(input, output) {
   FrontierNames <- tolower(state.name[match(Frontier,state.abb)])
   PacificNames <- tolower(state.name[match(Pacific,state.abb)])
   NorthEastNames <- tolower(state.name[match(NorthEast,state.abb)])
-  
-  #levels(police_killings_grouped$date)[1] <- "2015"
-  #levels(police_killings_grouped$date)[2] <- "2016"
-  #levels(police_killings_grouped$date)[3] <- "2017"
-  #levels(police_killings_grouped$date)[4] <- "2018"
+
   
   poverty_rates$State <- state.abb[match(poverty_rates$ï..State,state.name)]
   
@@ -137,29 +133,46 @@ shinyServer(function(input, output) {
   
   output$plot <- renderPlot({
   
+    
+  lm_fit <- lm(per_capita_killings ~ eval(as.name(input$demographic_variable)) , data=police_killings_grouped[police_killings_grouped$date == input$year,])
+
+
+
   xleft = 1.75
   xright = 0.57
   ybottom = -.07
   ytop = .2
   
+  dist_options <- c("Median Income" = "Median.Income",
+                    "Percent African-American" = "perc_black",
+                    "Percent Hispanic" = "perc_hisp",
+                    "Percent Minority" = "perc_minority",
+                    "Poverty Rate" = "PovertyRate")
   
-  plot1 <- ggplot(data = police_killings_grouped[police_killings_grouped$date == input$year,], aes(x = PovertyRate, y = per_capita_killings, size = POPESTIMATE2017, fill = Region)) +
+  
+  ind = which(dist_options==input$demographic_variable)
+  name_var = names(dist_options[ind])
+  
+  
+  
+  plot1 <- ggplot(data = police_killings_grouped[police_killings_grouped$date == input$year,], aes(x = eval(as.name(input$demographic_variable)), y = per_capita_killings, size = POPESTIMATE2017, fill = Region)) +
     geom_point(alpha = .9, pch=21, color = "black") + 
-    #ylab("Police Killings per 100,000 Residents") +
-    #xlab("Median State Income in US Dollars") +
-    #scale_size_continuous(guide = 'none', range = c(3,20)) +
+    geom_abline(slope=lm_fit$coef[2],intercept=lm_fit$coef[1],linetype = "dashed") +
+    
+
     scale_size_continuous((name = "State Population"),
                           breaks = c(1000000,30000000),
                           labels = c("1 million", "30 million"), range = c(3,20)) +
     theme_bw() +
     guides(fill = guide_legend(override.aes = list(size=10), nrow = 3)) +
-    labs(title = "Police Killings vs. Percentage of People Living in Poverty by State",
-         subtitle = "States with higher poverty rates tend to have higher frequencies of police killings",
-         caption = "Source: The Washington Post", 
-         x = "Poverty Rate in %", y = "Police Killings per 100,000 Residents") +
-    theme(axis.text = element_text(size = 11),
+    labs(title = paste("Police Killings vs.",name_var) ,
+         subtitle = "Plot shows some variables have an association with police killings",
+         #caption = "Source: The Washington Post",
+         caption = paste("R^2:",as.character(round(summary(lm_fit)$r.squared,3) )),
+         x = name_var, y = "Police Killings per 100,000 Residents") +
+    theme(axis.text = element_text(size = 13),
           plot.title = element_text(size = 16, face = "bold")) +
-    scale_fill_manual(values = c("#56B4E9", "#F0E442", "#0072B2", "#D55E00", "#CC79A7"))  
+    scale_fill_manual(values = c("#56B4E9", "#F0E442", "#0072B2", "#D55E00", "#CC79A7"))
   
   plot2 <- ggplot(all_states, aes(x=long, y=lat, group = group)) + 
     geom_polygon(fill="grey", colour = "white") +
@@ -171,13 +184,13 @@ shinyServer(function(input, output) {
     geom_polygon(fill="#0072B2", data = filter(all_states, region %in% NorthEastNames)) +
     theme_void()
   
+
   l1 = ggplot_build(plot1)
   
   x1 = l1$layout$panel_scales_x[[1]]$range$range[1]
   x2 = l1$layout$panel_scales_x[[1]]$range$range[2]
   y1 = l1$layout$panel_scales_y[[1]]$range$range[1]
   y2 = l1$layout$panel_scales_y[[1]]$range$range[2]
-  
   
   
   
@@ -190,12 +203,16 @@ shinyServer(function(input, output) {
   
   
   g2 = ggplotGrob(plot2)
+  
+  
   plot3 = plot1 + annotation_custom(grob = g2, xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
+  
   plot3
   
   
   },width = 1020, height = 460)
-  
-  
+ 
+
+
   
 })

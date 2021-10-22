@@ -10,6 +10,7 @@ library(gridExtra)
 library(maps)
 library(httr)
 library(jsonlite)
+library(plotly)
 
 setwd("~/Projects/Police Shootings")
 
@@ -31,8 +32,18 @@ shinyUI(dashboardPage(skin="black",
                                     
                                     conditionalPanel(condition = "input.tabs == 'police_killings'",                     
                       
+
+                      
+                      selectInput("demographic_variable", label = h5("Choose a statistic"),
+                                  list("Median Income" = "Median.Income",
+                                       "Percent African-American" = "perc_black",
+                                       "Percent Hispanic" = "perc_hisp",
+                                       "Percent Minority" = "perc_minority",
+                                       "Poverty Rate" = "PovertyRate"
+                                       ),selected = "PovertyRate"),
+                      
                       sliderInput("year", label = "Year:",
-                                  min = 2015, max = max_year, value = 2015, ticks = F, sep="")
+                                  min = 2015, max = max_year, value = 2015, ticks = F, sep=""),
 
                       
                       
@@ -46,18 +57,34 @@ shinyUI(dashboardPage(skin="black",
             tags$style(type="text/css",  ".well { max-width: 360px; }")
             
         ),
+        
+        conditionalPanel(condition = "input.tabs == 'about'",
+                         tabItem(tabName = "about",
+                                 h2("About this App"),
+                                 HTML('<br/>'),
+                                 fluidRow(
+                                         box(title = "Author: Max Rodrigues", background = "black", width=7, collapsible = F,
+                                             
+                                             helpText(p(strong("Exploration of police killings data from the Washington Post. Data is pulled directly from the Washington Post Github and updated daily."))),
+                                             
+                                             helpText(p("Please contact me at my email mrod1791@gmail.com or visit my",
+                                                        a(href ="https://mrodrigues17.github.io./", "personal page", target = "_blank"),
+                                                        "for more information, to suggest improvements or report errors.")))))),
+        
+        
+        
+        
         conditionalPanel(condition = "input.tabs == 'police_killings'",
                          
-                         
+
                          
                          tabItem(tabName = "police_killings",
-                                 box(plotOutput("plot"), width=11,height=7, collapsible = TRUE)))
+                                 box(plotOutput("plot"),
+                                     
+                                      width=11,height=7, collapsible = FALSE)))
         
         
         ),
         
-        
-        
-        
-        
-        ))
+        )
+)
