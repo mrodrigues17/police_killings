@@ -7,7 +7,7 @@ library(maps)
 options(scipen=999)
 
 shinyServer(function(input, output) {
-  
+  #testing
   setwd("~/Projects/Police Shootings")
   
   police_killings <- read.csv(url("https://github.com/washingtonpost/data-police-shootings/releases/download/v0.1/fatal-police-shootings-data.csv"))
