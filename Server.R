@@ -129,10 +129,9 @@ shinyServer(function(input, output) {
   
   police_killings_grouped$date <- as.character(police_killings_grouped$date)
   
-  police_killings_grouped$date <- as.numeric(police_killings_grouped$date)
+  #police_killings_grouped$date <- as.numeric(police_killings_grouped$date)
   
-  max(police_killings_grouped$date)
-  
+
   
   
   
